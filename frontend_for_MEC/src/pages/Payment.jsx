@@ -15,21 +15,11 @@ export default function Payment() {
     }
 
     try {
-      // Check if user is logged in
-      const loggedInUser = JSON.parse(localStorage.getItem("user"));
-      let userId;
-
-      if (loggedInUser) {
-        userId = loggedInUser._id;
-      } else {
-        // Use checkout info
-        const checkoutInfo = JSON.parse(localStorage.getItem("checkoutInfo"));
-        if (!checkoutInfo) {
-          alert("Please complete checkout first");
-          navigate("/checkout");
-          return;
-        }
-        userId = checkoutInfo.userId;
+      const checkoutInfo = JSON.parse(localStorage.getItem("checkoutInfo"));
+      if (!checkoutInfo) {
+        alert("Please complete checkout first");
+        navigate("/checkout");
+        return;
       }
 
       // Calculate total
@@ -37,23 +27,24 @@ export default function Payment() {
 
       // Prepare order data
       const orderData = {
-        user: userId,
+        user: checkoutInfo.userId,
         products: cart.map(item => ({
           product: item.id,
           quantity: item.qty,
           price: item.price
         })),
         totalAmount,
-        shippingAddress: loggedInUser ? "Default Address" : JSON.parse(localStorage.getItem("checkoutInfo")).address,
+        shippingAddress: checkoutInfo.address,
       };
 
       await createOrder(orderData);
 
       // Clear cart and navigate
       clearCart();
+      localStorage.removeItem("checkoutInfo"); // Clean up
       navigate("/success");
     } catch (error) {
-      alert('Error creating order: ' + error.response?.data?.message);
+      alert('Error creating order: ' + (error.response?.data?.message || error.message));
     }
   };
 

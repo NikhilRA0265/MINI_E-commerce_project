@@ -1,23 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUser } from "../services/api";
 
 export default function Checkout() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
     name: "",
     email: "",
     address: "",
   });
 
-  // Check if user is already logged in
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
-  if (loggedInUser) {
-    // Redirect to payment if logged in
-    navigate("/payment");
-    return null;
-  }
+  // Check if user is already logged in and pre-fill the form
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    if (loggedInUser) {
+      setForm({
+        name: loggedInUser.name,
+        email: loggedInUser.email,
+        address: "", // Keep address empty or get from user profile if available
+      });
+    }
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,30 +35,38 @@ export default function Checkout() {
       return;
     }
 
-    try {
-      // Create user
-      const userResponse = await createUser({
-        name: form.name,
-        email: form.email,
-        password: 'temp123', // You might want to handle password differently
-      });
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
-      // Store user info
+    try {
+      let userId;
+      if (loggedInUser) {
+        userId = loggedInUser._id;
+      } else {
+        // Create user for guests
+        const userResponse = await createUser({
+          name: form.name,
+          email: form.email,
+          password: 'temp123', // You might want to handle password differently
+        });
+        userId = userResponse.data._id;
+      }
+
+      // Store user info for payment page
       localStorage.setItem("checkoutInfo", JSON.stringify({
         ...form,
-        userId: userResponse.data._id
+        userId: userId
       }));
 
       // go to payment page
       navigate("/payment");
     } catch (error) {
-      // Check if it's a duplicate email error
-      if (error.response?.data?.message?.includes('duplicate key error')) {
+      // Check if it's a duplicate email error (only for guest checkout)
+      if (!loggedInUser && error.response?.data?.message?.includes('duplicate key error')) {
         alert('An account with this email already exists. Please login instead.');
         navigate('/login');
         return;
       }
-      alert('Error creating user: ' + error.response?.data?.message);
+      alert('Error processing checkout: ' + (error.response?.data?.message || error.message));
     }
   };
 

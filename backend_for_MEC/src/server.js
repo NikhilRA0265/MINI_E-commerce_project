@@ -23,12 +23,26 @@ mongoose.connect(process.env.MONGO_URI)
 import userRoutes from './routers/userRoutes.js';
 import productRoutes from './routers/productRoutes.js';
 import orderRoutes from './routers/orderRoutes.js';
+import paymentRoutes from './routers/paymentRoutes.js';
 
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payment', paymentRoutes);
+
+// Health check endpoint to verify backend is running
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'Backend is running', 
+    timestamp: new Date().toISOString(),
+    message: 'Server is listening and ready to accept requests'
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log('═'.repeat(50));
+  console.log(`✓ Backend server is LISTENING on port ${PORT}`);
+  console.log('✓ You can verify the connection at: http://localhost:' + PORT + '/health');
+  console.log('═'.repeat(50));
 });
