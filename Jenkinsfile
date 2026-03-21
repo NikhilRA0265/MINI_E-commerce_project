@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Code') {
             steps {
-                git 'https://github.com/NikhilRA0265/MINI_E-commerce_project'
+                git branch: 'main', url: 'https://github.com/NikhilRA0265/MINI_E-commerce_project'
             }
         }
 
