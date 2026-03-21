@@ -1,25 +1,38 @@
 pipeline {
     agent any
-     
+
     environment {
-        IMAGE_NAME = "nikhilrao6225/mern-backend:v1"
+        BACKEND_IMAGE = "nikhilrao6225/backend:v1"
+        FRONTEND_IMAGE = "nikhilrao6225/frontend:v1"
     }
 
     stages {
-        stage('Clone Code') {
+
+        stage('Install Backend Dependencies') {
             steps {
-                git branch: 'main', url: 'https://github.com/NikhilRA0265/MINI_E-commerce_project'
+                dir('backend') {
+                    sh 'npm install'
+                }
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Frontend Dependencies') {
             steps {
-                sh 'npm install'
+                dir('frontend') {
+                    sh 'npm install'
+                }
             }
         }
-        stage('Build Docker Image') {
+
+        stage('Build Backend Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh 'docker build -t $BACKEND_IMAGE ./backend'
+            }
+        }
+
+        stage('Build Frontend Docker Image') {
+            steps {
+                sh 'docker build -t $FRONTEND_IMAGE ./frontend'
             }
         }
     }
