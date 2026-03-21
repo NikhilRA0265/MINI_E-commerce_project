@@ -10,7 +10,7 @@ pipeline {
 
         stage('Install Backend Dependencies') {
             steps {
-                dir('backend') {
+                dir('backend_for_MEC') {
                     sh 'npm install'
                 }
             }
@@ -18,7 +18,7 @@ pipeline {
 
         stage('Install Frontend Dependencies') {
             steps {
-                dir('frontend') {
+                dir('frontend_for_MEC') {
                     sh 'npm install'
                 }
             }
@@ -26,13 +26,13 @@ pipeline {
 
         stage('Build Backend Docker Image') {
             steps {
-                sh 'docker build -t $BACKEND_IMAGE ./backend'
+                sh 'docker build -t $BACKEND_IMAGE ./backend_for_MEC'
             }
         }
 
         stage('Build Frontend Docker Image') {
             steps {
-                sh 'docker build -t $FRONTEND_IMAGE ./frontend'
+                sh 'docker build -t $FRONTEND_IMAGE ./frontend_for_MEC'
             }
         }
     }
