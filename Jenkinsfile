@@ -35,5 +35,27 @@ pipeline {
                 sh 'docker build -t $FRONTEND_IMAGE ./frontend_for_MEC'
             }
         }
+
+        stage('Push Backend Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                    echo $PASS | docker login -u $USER --password-stdin
+                    docker push $BACKEND_IMAGE
+                    '''
+                }
+            }
+        }
+
+        stage('Push Frontend Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                    echo $PASS | docker login -u $USER --password-stdin
+                    docker push $FRONTEND_IMAGE
+                    '''
+                }
+            }
+        }
     }
 }
