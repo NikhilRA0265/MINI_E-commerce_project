@@ -57,5 +57,19 @@ pipeline {
                 }
             }
         }
+
+        stage('SonarQube Analysis') {
+          steps {
+                 withSonarQubeEnv('sonarqube-server') {
+                   sh '''
+                    sonar-scanner \
+                    -Dsonar.projectKey=mern-project \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://host.docker.internal:9000 \
+                    -Dsonar.login=YOUR_TOKEN
+                   '''
+                }
+            }
+        }
     }
 }
