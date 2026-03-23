@@ -62,7 +62,7 @@ pipeline {
           steps {
                  withSonarQubeEnv('sonarqube-server') {
                    sh '''
-                    sonar-scanner \
+                    $SONAR_SCANNER_HOME/bin/sonar-scanner \
                     -Dsonar.projectKey=mern-project \
                     -Dsonar.sources=. \
                     -Dsonar.host.url=http://host.docker.internal:9000 \
