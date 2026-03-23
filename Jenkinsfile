@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        sonarQubeScanner 'sonar-scanner'
+    }
+
+
     environment {
         BACKEND_IMAGE = "nikhilrao6225/backend:v1"
         FRONTEND_IMAGE = "nikhilrao6225/frontend:v1"
