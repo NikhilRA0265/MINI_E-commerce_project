@@ -63,7 +63,6 @@ pipeline {
                  withSonarQubeEnv('sonarqube-server') {
                    sh '''
                    /opt/sonar-scanner/bin/sonar-scanner \
-                    $SONAR_SCANNER_HOME/bin/sonar-scanner \
                     -Dsonar.projectKey=mern-project \
                     -Dsonar.sources=. 
                    '''
