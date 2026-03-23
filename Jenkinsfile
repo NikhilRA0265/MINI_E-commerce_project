@@ -64,9 +64,7 @@ pipeline {
                    sh '''
                     $SONAR_SCANNER_HOME/bin/sonar-scanner \
                     -Dsonar.projectKey=mern-project \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=http://host.docker.internal:9000 \
-                    -Dsonar.login=sqa_c09e1177571e5ff00e03db5f770e69e3e9b99f16
+                    -Dsonar.sources=. 
                    '''
                 }
             }
