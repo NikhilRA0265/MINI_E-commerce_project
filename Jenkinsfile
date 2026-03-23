@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     environment {
         BACKEND_IMAGE = "nikhilrao6225/backend:v1"
         FRONTEND_IMAGE = "nikhilrao6225/frontend:v1"
@@ -8,6 +9,17 @@ pipeline {
 
     stages {
 
+         stage('SonarQube Analysis') {
+          steps {
+                 withSonarQubeEnv('sonarqube-server') {
+                   sh '''
+                   /opt/sonar-scanner/bin/sonar-scanner \
+                    -Dsonar.projectKey=mern-project \
+                    -Dsonar.sources=. 
+                   '''
+                }
+            }
+        }
         stage('Install Backend Dependencies') {
             steps {
                 dir('backend_for_MEC') {
@@ -54,18 +66,6 @@ pipeline {
                     echo $PASS | docker login -u $USER --password-stdin
                     docker push $FRONTEND_IMAGE
                     '''
-                }
-            }
-        }
-
-        stage('SonarQube Analysis') {
-          steps {
-                 withSonarQubeEnv('sonarqube-server') {
-                   sh '''
-                   /opt/sonar-scanner/bin/sonar-scanner \
-                    -Dsonar.projectKey=mern-project \
-                    -Dsonar.sources=. 
-                   '''
                 }
             }
         }
